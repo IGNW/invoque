@@ -6,6 +6,7 @@ import {
 import {
   json,
 } from 'micro';
+import { resolve } from 'path';
 import * as qs from 'querystring';
 import {
   parse,
@@ -15,6 +16,14 @@ import {
   Request,
   Response,
 } from './types';
+
+export const functionsFromPath = (sourcePath: string): Functions =>
+  !fs.lstatSync(sourcePath).isDirectory()
+    ? require(sourcePath) // tslint:disable-line
+    : fs.readdirSync(sourcePath).reduce((acc, file) => ({
+      ...acc,
+      ...require(resolve(process.cwd(), sourcePath, file)),
+    }), { });
 
 export const serviceFromFunctions = (functions: Functions) =>
   async (req: Request, res: ServerResponse) => {
