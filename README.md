@@ -166,7 +166,7 @@ Then add a test script to package.json: `"test": "jest"`
 
 
 #### Tips:
-* Although you likely could, we suggest storing common dependencies in a separate and publish them to NPM.
+* Although you likely could, we suggest storing common service dependencies in a separate repo and publishing them to npm.
 * You can use the created `Dockerfile` along with `docker-compose` to bring up dependent servcies, local aws, pubsub, database etc.
 
 ## Roadmap
