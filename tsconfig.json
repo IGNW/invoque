@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "target": "es2017",
+      "module": "commonjs",
+      "lib": ["es2017", "dom"],
+      "declaration": false,
+      "outDir": "dist",
+      "strict": true,
+      "typeRoots": ["./types", "./node_modules/@types"],
+      "sourceMap": true
+    },
+    "compileOnSave": true,
+    "include": ["src"],
+    "exclude": ["node-modules", "dist"]
+  }

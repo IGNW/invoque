@@ -1,0 +1,45 @@
+{
+  "name": "invoque",
+  "version": "1.0.0",
+  "description": "A flexible pattern for function oriented service composition / decomposition",
+  "main": "dist/index.js",
+  "bin": {
+    "invq": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon --exec ts-node src/invq.ts examples/ express --watch 'src/**/*.ts' 'test/**/*.ts'",
+    "lint": "tslint --project tsconfig.json",
+    "test:dev": "jest --watch",
+    "test": "npm run lint && jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cif/invoque.git"
+  },
+  "author": "Ben Ipsen",
+  "license": "GNU",
+  "bugs": {
+    "url": "https://github.com/cif/invoque/issues"
+  },
+  "homepage": "https://github.com/cif/invoque#readme",
+  "dependencies": {
+    "debug": "^4.1.1",
+    "micro": "^9.3.4",
+    "yargs": "^14.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.18",
+    "@types/micro": "^7.3.3",
+    "@types/node": "^12.7.2",
+    "@types/supertest": "^2.0.8",
+    "@types/yargs": "^13.0.2",
+    "jest": "^24.9.0",
+    "nodemon": "^1.19.2",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.0.2",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
+  }
+}
