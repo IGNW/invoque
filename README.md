@@ -134,8 +134,8 @@ describe('my cool service', () => {
 
   test('healthcheck', async () => {
       const { body } = await request(app)
-      .get('/healthcheck')
-          .expect(200);
+        .get('/healthcheck')
+        .expect(200);
       expect(body.service).toBe('up')
   });
 });
