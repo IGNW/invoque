@@ -2,17 +2,15 @@ import { RequestListener } from 'http';
 import { resolve } from 'path';
 import * as request from 'supertest';
 import {
+  functionsFromPath,
   serviceFromFunctions,
 } from '../src/service';
-import {
-  functionsFromPath,
-} from '../src/util';
 
 describe('express service', () => {
-  let app: RequestListener;
-  let singleModuleApp: RequestListener;
-  const exampleHandlers = resolve(process.cwd(), 'examples');
-  const exampleHandlerFile = resolve(process.cwd(), 'examples/hello.ts');
+  let app: any;
+  let singleModuleApp: any;
+  const exampleHandlers = resolve(process.cwd(), 'src/examples');
+  const exampleHandlerFile = resolve(process.cwd(), 'src/examples/hello.ts');
   beforeAll(() => {
     app = serviceFromFunctions(
       functionsFromPath(exampleHandlers),

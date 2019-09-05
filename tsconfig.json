@@ -9,6 +9,6 @@
     "typeRoots": ["./types", "./node_modules/@types"] /* List of folders to include type definitions from. */
   },
   "compileOnSave": true,
-  "include": ["src", "services"],
+  "include": ["src"],
   "exclude": ["node-modules", "dist"]
 }

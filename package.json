@@ -10,8 +10,8 @@
   "types": "dist/lib.d.ts",
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon --exec ts-node src/invq.ts http ./examples --watch 'src/**/*.ts' 'test/**/*.ts'",
-    "container": "ts-node src/invq.ts build ./examples --tag invoque-container",
+    "dev": "nodemon --exec ts-node src/invq.ts http examples/ --watch 'src/**/*.ts' 'test/**/*.ts'",
+    "container": "ts-node src/invq.ts build examples/ --tag invoque-container",
     "lint": "tslint --project tsconfig.json",
     "prepublish": "npm run build",
     "test:dev": "jest --watch",
@@ -35,7 +35,7 @@
   "devDependencies": {
     "@types/jest": "^24.0.18",
     "@types/micro": "^7.3.3",
-    "@types/node": "^12.7.2",
+    "@types/node": "^12.7.4",
     "@types/supertest": "^2.0.8",
     "@types/yargs": "^13.0.2",
     "jest": "^24.9.0",

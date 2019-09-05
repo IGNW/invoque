@@ -1,4 +1,4 @@
-import { Invoquation } from '../src/types';
+import { Invoquation } from '../types';
 
 export const hello = ({ type, payload }: Invoquation) => {
   return `Hello ${type}, here is your ${payload.hello}`;
