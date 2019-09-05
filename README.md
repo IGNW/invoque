@@ -1,6 +1,6 @@
-# Invoque
+# Invoque (BETA)
 
-A pattern for function oriented service composition / decomposition.
+A pattern for function oriented service composition / decomposition. **This is beta / poc software (for now)**
 
 ### "All I want to do is write functions..."
 
