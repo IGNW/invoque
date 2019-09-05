@@ -110,7 +110,7 @@ invoque http users/ --port 3030
 
 ## Testing
 
-Though you can use any test tools you whish, Invoque exposes two functions that allow you to use [Supertest](https://github.com/visionmedia/supertest) for HTTP calls: `functionsFromPath` and `serviceFromFunctions`
+Though you can use any test tools you wish, Invoque exposes two functions that allow you to use [Supertest](https://github.com/visionmedia/supertest) for HTTP calls: `functionsFromPath` and `serviceFromFunctions`
 
 Here's an example that tests our `/healthcheck` route from the example above:
 
@@ -122,7 +122,7 @@ import {
   serviceFromFunctions,
 } from 'invoque';
 
-describe('express service', () => {
+describe('my cool service', () => {
   let app: any;
   const handlers = resolve(process.cwd(), 'src/service.ts');
   beforeAll(() => {
