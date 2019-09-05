@@ -7,7 +7,7 @@ import { argv } from 'yargs';
 import {
   functionsFromPath,
   serviceFromFunctions,
-} from './service';
+} from './invoque-service';
 
 if (argv.h || argv.help) {
   // tslint:disable-next-line
@@ -54,7 +54,7 @@ if (service === ServiceTarget.Container) {
   console.log(`Building service container from ${source}...`);
   console.log('Compliling TypeScript...');
   // use tsconfig from invoque if one is not already present
-  const tsconfigPath = resolve(process.cwd(), './node_modules/invoque/tsconfig.json');
+  const tsconfigPath = resolve(process.cwd(), './node_modules/invoque/tsconfig.invoque.json');
   const localConfig = resolve(process.cwd(), 'tsconfig.json');
   if (!fs.existsSync(localConfig)) {
     console.log('No local tsconfig found, creating one...');
@@ -74,8 +74,8 @@ if (service === ServiceTarget.Container) {
   }
 
   console.log('Copying service into dist...');
-  const containerScript = resolve(process.cwd(), './node_modules/invoque/dist/container.js');
-  const localContainerScript = resolve(process.cwd(), 'dist/container.js');
+  const containerScript = resolve(process.cwd(), './node_modules/invoque/dist/invoque-container.js');
+  const localContainerScript = resolve(process.cwd(), 'dist/invoque-container.js');
   const localSource = resolve(process.cwd(), `dist/${source}`);
   if (!fs.existsSync(localSource)) {
     console.error(`invoque error: dist/${source} does not exist, unable to map functions to service`);
@@ -85,10 +85,9 @@ if (service === ServiceTarget.Container) {
     .replace('SOURCE_PATH_REPLACE_ON_BUILD', `dist/${source}`);
   fs.writeFileSync(localContainerScript, writeToFile, 'utf-8');
   fs.copyFileSync(
-    resolve(process.cwd(), './node_modules/invoque/dist/service.js'),
-    resolve(process.cwd(), 'dist/service.js')
+    resolve(process.cwd(), './node_modules/invoque/dist/invoque-service.js'),
+    resolve(process.cwd(), 'dist/invoque-service.js')
   );
-
 
 
   console.log('Building docker container...');

@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import {
   functionsFromPath,
   serviceFromFunctions,
-} from '../src/service';
+} from '../src/invoque-service';
 
 describe('express service', () => {
   let app: any;

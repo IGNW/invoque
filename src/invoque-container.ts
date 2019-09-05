@@ -3,7 +3,7 @@ import { createServer, RequestListener } from 'http';
 import {
   functionsFromPath,
   serviceFromFunctions,
-} from './service';
+} from './invoque-service';
 
 const SOURCE_PATH = 'SOURCE_PATH_REPLACE_ON_BUILD';
 

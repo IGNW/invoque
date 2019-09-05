@@ -17,4 +17,4 @@ COPY --from=build-image ./node_modules ./node_modules
 COPY package.json ./package.json
 RUN apk add --update nodejs
 
-CMD [ "node", "dist/container.js" ]
+CMD [ "node", "dist/invoque-container.js" ]
