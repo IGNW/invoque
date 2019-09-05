@@ -1,10 +1,10 @@
 # Invoque (BETA)
 
-A pattern for function oriented service composition / decomposition. **This is beta / poc software (for now)**
+A pattern for function oriented service composition / decomposition. **This is beta / poc software**
 
 ### "All I want to do is write functions..."
 
-Invoque is a tool that gives you the ability to maintain your application code as a monolith and supplies tooling that lets you deploy either containerized service or invididual serverless functions depending on workload requirements and costing.
+Invoque is a tool that gives you the ability to maintain your application code as a monolith and supplies tooling that lets you deploy either containerized services or invididual serverless functions. You can easily switch between deployment strategies **without rewriting any code.**
 
 #### You will never have to hand-code an http/express service in Node again! 🎉
 
@@ -13,8 +13,8 @@ Invoque is a tool that gives you the ability to maintain your application code a
 Invoque opts for conventions over configuration:
 
 1. TypeScript, because, TypeScript.
-2. Aplication live in a `/src` folder.
-3. Functions all take `Invoquation` object as their only argument, with a `type` and `payload`.
+2. Application code (i.e. functions) live in a `/src` folder.
+3. Functions take an `Invoquation` object as their only argument which has a `type` and `payload`.
 4. Functions simply throw and the service will respond accordingly.
 5. Functions return a `Response` which can be a plain object, or have `data`, `status`, and `headers` props for more control over HTTP responses.
 6. Service routes map `http://my-service.com/my-function` to the name of your function' `export const my-function = {...}`*
@@ -170,11 +170,11 @@ Then add a test script to package.json: `"test": "jest"`
 * You can use the created `Dockerfile` along with `docker-compose` to bring up dependent servcies, local aws, pubsub, database etc.
 
 ## Roadmap
- * Google Cloud Functions deploy tool
- * Google Cloud Function Event trigger handler tooling (dev server)
+ * Google Cloud Functions deploy tools
+ * Google Cloud Function event trigger handler tooling (dev server)
  * AWS Lambda/Azure/Hybrid Deploy (Terrraform?)
  * CI/CD Tooling
- * Advanced Routing
+ * Advanced Routing(?)
 
 
 ## What about REST?
@@ -183,4 +183,4 @@ No REST for the weary. 😂 The future of the mundane workload is serverless and
 
 ## Credit
 
-This idea for invoque was partically inspired by the [Google Functions Framework](https://github.com/GoogleCloudPlatform/functions-framework-nodejs)
+The idea for invoque was partically inspired by the [Google Functions Framework](https://github.com/GoogleCloudPlatform/functions-framework-nodejs)
