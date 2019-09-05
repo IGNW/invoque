@@ -84,7 +84,7 @@ You should be able to make requests to the container at `http://localhost:3001/`
 
 
 
-## More Invoque Usage / Examples
+## More Usage Examples
 
 Currently, invoque supports `http` and `build` commands. **The second argument is the directory or single ts module**. This allows you to organize code into groups of endpoints by either, exporting multipe functions from a single file, grouping functions into folders or both.
 
@@ -103,7 +103,71 @@ invoque build users/ --tag user-service
 invoque build accounts/ --tag account-service
 ```
 
-#### Tip: Although you definitely could, we suggest you store common dependencies in a separate and publish them to NPM.
+To run a local server for dev
+```
+invoque http users/ --port 3030
+```
+
+## Testing
+
+Though you can use any test tools you whish, Invoque exposes two functions that allow you to use [Supertest](https://github.com/visionmedia/supertest) for HTTP calls: `functionsFromPath` and `serviceFromFunctions`
+
+Here's an example that tests our `/healthcheck` route from the example above:
+
+```ts
+import { resolve } from 'path';
+import * as request from 'supertest';
+import {
+  functionsFromPath,
+  serviceFromFunctions,
+} from 'invoque';
+
+describe('express service', () => {
+  let app: any;
+  const handlers = resolve(process.cwd(), 'src/service.ts');
+  beforeAll(() => {
+    app = serviceFromFunctions(
+      functionsFromPath(handlers),
+    );
+
+  });
+
+  test('healthcheck', async () => {
+      const { body } = await request(app)
+      .get('/healthcheck')
+          .expect(200);
+      expect(body.service).toBe('up')
+  });
+});
+```
+
+You will also need to install some dev dependencies:
+`npm i -D typescript jest ts-test @types/jest supertest @types/supertest`
+
+Add a jest.config.js:
+
+```js
+module.exports = {
+  transform: {
+    '^.+\\.tsx?$': 'ts-jest',
+  },
+  silent: true,
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testRegex: '(/tests/.*|(\\.|/)(test))\\.(ts)$',
+  moduleFileExtensions: ['js', 'ts', 'json'],
+  testPathIgnorePatterns: ['node_modules', 'dist', 'task', 'types'],
+  collectCoverage: true,
+};
+
+```
+
+Then add a test script to package.json: `"test": "jest"`
+
+
+#### Tips:
+* Although you likely could, we suggest storing common dependencies in a separate and publish them to NPM.
+* You can use the created `Dockerfile` along with `docker-compose` to bring up dependent servcies, local aws, pubsub, database etc.
 
 ## Roadmap
  * Google Cloud Functions deploy tool
