@@ -170,7 +170,8 @@ Then add a test script to package.json: `"test": "jest"`
 * You can use the created `Dockerfile` along with `docker-compose` to bring up dependent servcies, local aws, pubsub, database etc.
 
 ## Roadmap
- * Google Cloud Functions deploy tools
+ * Google Cloud Functions Deploy Tools
+ * Google Run Deploy Tools
  * Google Cloud Function event trigger handler tooling (dev server)
  * AWS Lambda/Azure/Hybrid Deploy (Terrraform?)
  * CI/CD Tooling

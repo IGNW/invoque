@@ -17,7 +17,7 @@ if (argv.h || argv.help) {
 
 const [
   service,
-  source = '',
+  source = './',
 ] = argv._;
 
 enum ServiceTarget {
@@ -89,15 +89,12 @@ if (service === ServiceTarget.Container) {
     resolve(process.cwd(), 'dist/invoque-service.js')
   );
 
-
   console.log('Building docker container...');
   const imageTag = argv.tag as string || 'my-container';
   const build = spawn(`docker`, ['build', '.', '-t', imageTag]);
-  build.stdout.on( 'data', data => console.log(data.toString()) );
-  build.stderr.on( 'data', data => console.log(data.toString()) );
-  build.on( 'close', code => console.log( `child process exited with code ${code}` ) );
-
-  // process.exit(0);
+  build.stdout.on('data', data => console.log(data.toString()));
+  build.stderr.on('data', data => console.log(data.toString()));
+  build.on('close', () => console.log('Docker container build complete'));
 }
 
 if (service === ServiceTarget.Run) {
