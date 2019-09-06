@@ -176,11 +176,6 @@ Then add a test script to package.json: `"test": "jest"`
  * CI/CD Tooling
  * Advanced Routing(?)
 
-
-## What about REST?
-
-No REST for the weary. 😂 The future of the mundane workload is serverless and event based.
-
 ## Credit
 
 The idea for invoque was partically inspired by the [Google Functions Framework](https://github.com/GoogleCloudPlatform/functions-framework-nodejs)
