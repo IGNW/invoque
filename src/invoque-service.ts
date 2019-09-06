@@ -1,15 +1,10 @@
 
-import * as fs from 'fs';
 import {
   ServerResponse,
 } from 'http';
 import {
   json,
 } from 'micro';
-import {
-  resolve,
-} from 'path';
-import * as qs from 'querystring';
 import {
   parse,
 } from 'url';
@@ -19,19 +14,6 @@ import {
   Request,
   Response,
 } from './types';
-
-export const functionsFromPath = (sourcePath: string): Functions =>
-  !fs.lstatSync(sourcePath).isDirectory()
-    ? require(sourcePath) // tslint:disable-line
-    : fs.readdirSync(sourcePath)
-      // if project has no depth, remove invoque files from the service
-      .filter(
-        (file: string) => file !== 'invoque-service.js' && file !== 'invoque-container.js',
-      )
-      .reduce((acc, file) => ({
-      ...acc,
-      ...require(resolve(process.cwd(), sourcePath, file)),
-    }), { });
 
 export const payloadFromRequest = async (
   req: Request,
@@ -50,7 +32,7 @@ export const payloadFromRequest = async (
   }
   // http get
   if (req.method === 'GET') {
-    return qs.parse(parse(req.url!).query || '');
+    return parse(req.url, true).query;
   }
   // http 'other' request
   return req.body || json(req);

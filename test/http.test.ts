@@ -2,9 +2,11 @@ import { RequestListener } from 'http';
 import { resolve } from 'path';
 import * as request from 'supertest';
 import {
-  functionsFromPath,
   serviceFromFunctions,
 } from '../src/invoque-service';
+import {
+  functionsFromPath,
+} from '../src/invoque-util';
 
 describe('express service', () => {
   let app: any;
