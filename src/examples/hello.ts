@@ -1,7 +1,6 @@
 import { Invoquation } from '../types';
 
 export const hello = ({ type, payload }: Invoquation) => {
-  console.log(payload);
   return `Hello ${type}, here is your ${payload.hello}`;
 };
 
