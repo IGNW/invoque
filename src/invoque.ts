@@ -22,11 +22,11 @@ const [
 
 enum ServiceTarget {
   HttpDevServer = 'http',
+  EventDevServer = 'event',
   Container = 'build',
-  Run = 'run',
 }
 
-if (service === ServiceTarget.HttpDevServer) {
+if (service === ServiceTarget.HttpDevServer || service === ServiceTarget.EventDevServer) {
   // check to ensure the target module exists
   const sourcePath = resolve(`${process.cwd()}/src`, source);
   if (!fs.existsSync(sourcePath)) {
@@ -37,12 +37,15 @@ if (service === ServiceTarget.HttpDevServer) {
 
   const functions = functionsFromPath(sourcePath);
   const port = process.env.PORT || argv.port || 3000;
-  createServer(serviceFromFunctions(functions) as RequestListener)
+  createServer(serviceFromFunctions(
+    functions,
+    service === ServiceTarget.EventDevServer,
+  ) as RequestListener)
     .listen(
       port,
       () => {
         // tslint:disable
-        console.log(`Service running on port ${port}, available routes:`)
+        console.log(`dev server running on port ${port}, available routes:`)
         Object.keys(functions).map(route =>
           console.log(`/${route}`)
         )
@@ -95,8 +98,4 @@ if (service === ServiceTarget.Container) {
   build.stdout.on('data', data => console.log(data.toString()));
   build.stderr.on('data', data => console.log(data.toString()));
   build.on('close', () => console.log('Docker container build complete'));
-}
-
-if (service === ServiceTarget.Run) {
-  require('./dist/container');
 }

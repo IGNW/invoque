@@ -17,6 +17,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --exec ts-node src/invoque.ts http examples/ --watch 'src/**/*.ts' 'test/**/*.ts'",
+    "dev:event": "nodemon --exec ts-node src/invoque.ts event examples/ --watch 'src/**/*.ts' 'test/**/*.ts'",
     "container": "ts-node src/invoque.ts build examples/ --tag invoque-container",
     "lint": "tslint --project tsconfig.json",
     "prepublish": "npm run build",

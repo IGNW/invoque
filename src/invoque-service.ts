@@ -1,19 +1,21 @@
 
 import * as fs from 'fs';
 import {
-  RequestListener,
   ServerResponse,
 } from 'http';
 import {
   json,
 } from 'micro';
-import { resolve } from 'path';
+import {
+  resolve,
+} from 'path';
 import * as qs from 'querystring';
 import {
   parse,
 } from 'url';
 import {
   Functions,
+  Payload,
   Request,
   Response,
 } from './types';
@@ -31,9 +33,37 @@ export const functionsFromPath = (sourcePath: string): Functions =>
       ...require(resolve(process.cwd(), sourcePath, file)),
     }), { });
 
-export const serviceFromFunctions = (functions: Functions) =>
+export const payloadFromRequest = async (
+  req: Request,
+  simulateEvent: boolean,
+): Promise<Payload> => {
+  // simulate event with a context
+  if (simulateEvent) {
+    return {
+      ...(req.body || await json(req)),
+      context: {
+        id: 'simulated.context.id',
+        name: 'simulated.event.or.fn.name',
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
+  // http get
+  if (req.method === 'GET') {
+    return qs.parse(parse(req.url!).query || '');
+  }
+  // http 'other' request
+  return req.body || json(req);
+};
+
+export const serviceFromFunctions = (
+  functions: Functions,
+  simulateEvent: boolean = false,
+) =>
   async (req: Request, res: ServerResponse) => {
-    const invocationType = `HTTP_${req.method!.toUpperCase()}`;
+    const invocationType = simulateEvent
+      ? 'invoque.simulated.event'
+      : `HTTP_${req.method!.toUpperCase()}`;
     const handler = (parse(req.url!).pathname || '').replace(/\//g, '');
 
     // 404 if we dont have a method
@@ -44,14 +74,17 @@ export const serviceFromFunctions = (functions: Functions) =>
     }
 
     try {
-      // parse post json or query string
-      const payload = req.method === 'GET'
-        ? qs.parse(parse(req.url!).query || '')
-        : req.body || await json(req);
+      // generate a payload, throws with bad json/no body for non-get
+      const payload = await payloadFromRequest(
+        req,
+        simulateEvent,
+      );
 
       // log request
-      console.log(invocationType, handler, payload); // tslint:disable-line
+      // tslint:disable-next-line
+      console.log(invocationType, handler, payload);
 
+      // invoke the target function with payload
       const result: Response = functions[handler]({
         payload,
         type: invocationType,
