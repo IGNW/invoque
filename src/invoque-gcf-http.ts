@@ -17,9 +17,17 @@ export const googleCloudFnHandler = (req: Request, res: Response) => {
       ? req.body.toString()
       : req.body;
 
-    console.log('what is the body?', body);
+    // try parsing the body, otherwise just keep raw
+    let parsedBody;
+    try {
+      parsedBody = JSON.parse(body);
+    } catch (e) {
+      // tslint:disable-next-line
+      console.warn('Unable to parse JSON body', body);
+      parsedBody = body;
+    }
     const payload: Payload = body && req.method !== 'GET'
-      ? JSON.parse(body)
+      ? parsedBody
       : parse(req.url, true).query;
 
     const result = moduleWithFn[HANDLER_TARGET]({
