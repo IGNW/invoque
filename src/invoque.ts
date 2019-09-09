@@ -26,6 +26,7 @@ enum ServiceTarget {
 
 enum environmentTargets {
   gcf = 'gcf',
+  run = 'run',
 }
 
 enum TriggerTypes {
@@ -78,8 +79,9 @@ if (service === ServiceTarget.Container) {
     fs.copyFileSync(tsconfigPath, localConfig);
   }
   spawnSync('rm', ['-rf', 'dist']);
-  spawnSync('npm', ['i', '@types/node']);
-  spawnSync('npm', ['i', '@types/micro']);
+  spawnSync('npm', ['i', '-D', '@types/node']);
+  spawnSync('npm', ['i', 'micro']); // used for body parsing
+  spawnSync('npm', ['i', '-D', '@types/micro']);
   const tsc = spawnSync('tsc');
   process.stdout.write(tsc.stdout.toString());
 
@@ -89,6 +91,11 @@ if (service === ServiceTarget.Container) {
   if (!fs.existsSync(localDockerfile)) {
     console.log('No local Dockerfile found, creating one...');
     fs.copyFileSync(dockerFilePath, localDockerfile);
+    // copy .docker ignore for cloud run
+    fs.copyFileSync(
+      resolve(process.cwd(), './node_modules/invoque/Dockerfile'),
+      resolve(process.cwd(), 'Dockerfile')
+    );
   }
 
   console.log('Copying service into dist...');
@@ -121,9 +128,13 @@ if (service === ServiceTarget.Container) {
 
 if (service === ServiceTarget.Deploy) {
   if (!environmentTarget) {
-    console.error('Please specify a functions deploy taget. Currently only "gcp" is supported');
+    console.error('Please specify a deploy target. Current support: gcf, run');
     process.exit(1);
   }
+  // deploy to run
+
+
+  // deploy to gcf
   console.log(`Deploying ${source}.${functionTarget} to ${environmentTarget}...`);
   console.log('Compliling TypeScript...');
   // use tsconfig from invoque if one is not already present
