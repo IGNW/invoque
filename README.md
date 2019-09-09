@@ -15,7 +15,7 @@ Invoque is a tool that gives you the ability to maintain application code as a m
 3. Functions take an `Invoquation` object as their only argument which has a `type` and `payload`.
 4. Functions can throw, be async or sync and service will respond accordingly. To send back another status code, attach `code` or `statusCode` to an extensible error object.
 5. Functions return a `Response` which can be a plain object, or have `data`, `status`, and `headers` props for more control over HTTP responses.
-6. Service routes map `http://my-service.com/my-function` to the name of your function' `export const my-function = {...}`*
+6. Service routes map `http://my-service.com/myFunction` to the name of your function' `export const myFunction = {...}`*
 7. Additional route "arguments" are passed a `uriArgs: string[]` prop of `Invoquation` e.g. `/users/123` will invoke with `{ uriArgs: ['123'] }`*
 
 *Any query string params will also be parsed and passed along with the payload.
@@ -27,9 +27,7 @@ To start using invoque add it as a dependency to your node project:
 npm i invoque
 ```
 
-Create a `src/` folder and create a `hello.ts` file.
-
-Add the following handler:
+Create a `src/` directory and add a file called `hello.ts` that exports two handler functions:
 
 ```ts
 import { Invoquation } from 'invoque';
@@ -61,12 +59,16 @@ The service will respond to any type of HTTP request, and the Invoquation type p
 curl -d '{ "hello": "world" }' http://localhost:3000/hello
 ```
 
-Will output `{"hello":"HTTP_POST","payload":{"hello":"world"}}`. You will also see the request logged in the running console.
+Will output `{"hello":"HTTP_POST","payload":{"hello":"world"}}`.
+
+Requests are logged in the running console.
 
 
-### Create a Docker Container
+### Building Docker Containers
 
-This assumes you have docker installed and running on your local machine. To create a container from your new service run:
+This assumes you have docker installed and running on your local machine.
+
+To create a container from your new service run:
 
 ```sh
 invoque build ./ --tag hello-service
@@ -79,7 +81,7 @@ You can now run your container locally to test it. For example, this will intera
 docker run -p 3001:8080 -e 'PORT=8080' t my-container
 ```
 
-You should be able to make requests to the container at `http://localhost:3001/`
+You should be able to make requests to the container at `http://localhost:3001/healthcheck`
 
 
 ## Usage/API
