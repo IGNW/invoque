@@ -12,7 +12,7 @@ Invoque is a tool that gives you the ability to maintain application code as a m
 
 1. TypeScript, because, TypeScript.
 2. Application code (i.e. functions) lives in a `/src` folder and gets compiled to `/dist`.
-3. Functions take an `Invoquation` object as their only argument which has a `type` and `payload`.
+3. Functions take an `Invoquation` object as their only argument which has `type`, `payload` and `uriArgs` properties.
 4. Functions can throw, be async or sync and service will respond accordingly. To send back another status code, attach `code` or `statusCode` to an extensible error object.
 5. Functions return a `Response` which can be a plain object, or have `data`, `status`, and `headers` props for more control over HTTP responses.
 6. Service routes map `http://my-service.com/myFunction` to the name of your function' `export const myFunction = {...}`*
@@ -73,7 +73,7 @@ To create a container from your new service run:
 ```sh
 invoque build ./ --tag hello-service
 ```
-This will package the invoque service code and your project into to `dist/`. A `Dockerfile` will be created for you which you can use to fine tune your desired deployment(s). `docker build` is run to create the a container corresponding to the `--tag` argument.
+This will package the invoque service code and your compiled project to `dist/`. A `Dockerfile` will be created for you which you can use to fine tune your desired deployment(s). `docker build` is run to create the a container corresponding to the `--tag` argument.
 
 You can now run your container locally to test it. For example, this will interactively run the hello-service container on port 8080 and expose it to port 3001 locallly.
 
@@ -83,24 +83,26 @@ docker run -p 3001:8080 -e 'PORT=8080' t my-container
 
 You should be able to make requests to the container at `http://localhost:3001/healthcheck`
 
-
 ## Usage/API
 
 The **first argument** to `invoque` is a command. Currently supported commands are
-* `http` Runs http dev server,
+* `http` Runs http dev server
 * `event` Runs dev server simuating event context (poorly)
 * `build` build a local docker container
 * `deploy` deploy to GCF/CloudRun.
 
-**The second argument is the directory or single ts module**. This allows you to organize code into groups of endpoints by either, exporting multipe functions from a single file, grouping functions into folders, or both.
+**The second argument is the directory or single ts module**.
+
+This allows you to organize code into groups of endpoints by exporting multiple functions from a single file, or grouping collections of functions into files and folders, or both.
 
 For example, this project structure
 ```
 /src
   /users
-     service.ts
+     userCrud.ts
+     userAuth.ts
   /accounts
-     service.ts
+     accountService.ts
 ```
 
 Could be used to build two separate service containers with invoque:
