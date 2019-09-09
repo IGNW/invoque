@@ -1,13 +1,13 @@
 {
   "name": "invoque",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "A flexible pattern for function oriented service composition / decomposition",
   "bin": {
     "invoque": "dist/invoque.js"
   },
   "files": [
     "dist/*",
-    "tsconfig.json",
+    "tsconfig.invoque.json",
     "Dockerfile",
     "package.json",
     "LICENSE"
