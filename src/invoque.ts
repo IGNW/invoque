@@ -137,7 +137,7 @@ if (service === ServiceTarget.Deploy) {
   // FIXME: This makes linking a pain (undoes it).
   // Workaround is to check for presense of this dep in package.json?
   // This also seems to adversely affect CGF deploys, not sure why exactly
-  // spawnSync('npm', ['i', '-D', '@types/node']);
+  spawnSync('npm', ['i', '-D', '@types/node']);
   const tsc = spawnSync('tsc');
   process.stdout.write(tsc.stdout.toString());
 
