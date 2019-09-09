@@ -1,7 +1,7 @@
 import { Invoquation } from '../types';
 
-export const hello = ({ type, payload }: Invoquation) => {
-  return `Hello ${type}, here is your ${payload.hello}`;
+export const hello = ({ type, payload, uriArgs: [id] }: Invoquation) => {
+return `Hello ${type}, here is your ${payload.hello}`;
 };
 
 export const fancy = ({ type, payload }: Invoquation) => {
