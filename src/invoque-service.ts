@@ -64,8 +64,9 @@ export const serviceFromFunctions = (
       );
 
       // log request
+      // TOOD: use debug module, be more verbose
       // tslint:disable-next-line
-      console.log(invocationType, handler, uriArgs, payload);
+      console.log(new Date().toISOString(), invocationType, handler, uriArgs, JSON.stringify(payload, null, 2));
 
       // invoke the target function with payload
       const invoquation: Invoquation = {
