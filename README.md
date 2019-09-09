@@ -15,7 +15,7 @@ Invoque is a tool that gives you the ability to maintain application code as a m
 3. Functions take an `Invoquation` object as their only argument which has `type`, `payload` and `uriArgs` properties.
 4. Functions can throw, be async or sync and service will respond accordingly. To send back another status code, attach `code` or `statusCode` to an extensible error object.
 5. Functions return a `Response` which can be a plain object, or have `data`, `status`, and `headers` props for more control over HTTP responses.
-6. Service routes map `http://my-service.com/myFunction` to the name of your function' `export const myFunction = {...}`*
+6. Service routes map `http://my-service.com/myFunction` to the name of your function `export const myFunction = {...}`
 7. Additional route "arguments" are passed a `uriArgs: string[]` prop of `Invoquation` e.g. `/users/123` will invoke with `{ uriArgs: ['123'] }`*
 
 *Any query string params will also be parsed and passed along with the payload.
