@@ -81,7 +81,7 @@ if (service === ServiceTarget.Container) {
   spawnSync('npm', ['i', '@types/node']);
   spawnSync('npm', ['i', '@types/micro']);
   const tsc = spawnSync('tsc');
-  console.log(tsc.stdout.toString());
+  process.stdout.write(tsc.stdout.toString());
 
   // use dockerfile from invoque if one is not already present
   const dockerFilePath = resolve(process.cwd(), './node_modules/invoque/Dockerfile');
@@ -114,8 +114,8 @@ if (service === ServiceTarget.Container) {
   console.log('Building docker container...');
   const imageTag = argv.tag as string || 'my-container';
   const build = spawn(`docker`, ['build', '.', '-t', imageTag]);
-  build.stdout.on('data', data => console.log(data.toString()));
-  build.stderr.on('data', data => console.log(data.toString()));
+  build.stdout.on('data', data => process.stdout.write(data.toString()));
+  build.stderr.on('data', data => process.stdout.write(data.toString()));
   build.on('close', () => console.log('Docker container build complete'));
 }
 
@@ -136,7 +136,7 @@ if (service === ServiceTarget.Deploy) {
   spawnSync('rm', ['-rf', 'dist']);
   // spawnSync('npm', ['i', '@types/node']);
   const tsc = spawnSync('tsc');
-  console.log(tsc.stdout.toString());
+  process.stdout.write(tsc.stdout.toString());
 
   const trigger = triggerType === TriggerTypes.http
     ? 'http'
@@ -183,6 +183,6 @@ if (service === ServiceTarget.Deploy) {
   ];
 
   const build = spawn(`gcloud`, args);
-  build.stdout.on('data', data => console.log(data.toString()));
-  build.stderr.on('data', data => console.log(data.toString()));
+  build.stdout.on('data', data => process.stdout.write(data.toString()));
+  build.stderr.on('data', data => process.stdout.write(data.toString()));
 }
