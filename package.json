@@ -1,6 +1,6 @@
 {
   "name": "invoque",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "A flexible pattern for function oriented service composition / decomposition",
   "bin": {
     "invoque": "dist/invoque.js"
@@ -22,7 +22,8 @@
     "lint": "tslint --project tsconfig.json",
     "prepublish": "npm run build",
     "test:dev": "jest --watch",
-    "test": "npm run lint && jest"
+    "test": "npm run lint && jest",
+    "postinstall": "npm i -D @types/node"
   },
   "repository": {
     "type": "git",

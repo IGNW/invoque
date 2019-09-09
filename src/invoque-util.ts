@@ -12,7 +12,10 @@ export const functionsFromPath = (sourcePath: string): Functions =>
       .filter(
         (file: string) => file.indexOf('invoque-') === -1 || file.indexOf('node_modules'),
       )
-      .reduce((acc, file) => ({
-      ...acc,
-      ...require(resolve(process.cwd(), sourcePath, file)),
-    }), { });
+      .reduce((acc, file) => {
+        console.log('file?', file);
+        return {
+          ...acc,
+          ...require(resolve(process.cwd(), sourcePath, file)),
+        };
+      }, { });
