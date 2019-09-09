@@ -14,3 +14,5 @@ export const fancy = ({ type, payload }: Invoquation) => {
 export const goodbye = ({ type, payload }: Invoquation) => {
   throw new Error('boom');
 };
+
+export const withArgs = ({ type, payload, uriArgs: [id] }: Invoquation) => id;

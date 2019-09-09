@@ -24,7 +24,7 @@ enum ServiceTarget {
   Deploy = 'deploy',
 }
 
-enum environmentTargets {
+enum EnvironmentTargets {
   gcf = 'gcf',
   run = 'run',
 }
@@ -36,7 +36,7 @@ enum TriggerTypes {
 const [
   service,
   source = '',
-  functionTarget = '',
+  functionTargetOrServiceName = '',
   environmentTarget,
   triggerType = 'http',
 ] = argv._;
@@ -68,8 +68,7 @@ if (service === ServiceTarget.HttpDevServer || service === ServiceTarget.EventDe
     );
 }
 
-if (service === ServiceTarget.Container) {
-  console.log(`Building service container from ${source}...`);
+const compileTypescript = () => {
   console.log('Compliling TypeScript...');
   // use tsconfig from invoque if one is not already present
   const tsconfigPath = resolve(process.cwd(), './node_modules/invoque/tsconfig.invoque.json');
@@ -78,13 +77,16 @@ if (service === ServiceTarget.Container) {
     console.log('No local tsconfig found, creating one...');
     fs.copyFileSync(tsconfigPath, localConfig);
   }
+  // FIXME? This makes dev with npm link somewhat annoying to work with (destroys and replaces)
   spawnSync('rm', ['-rf', 'dist']);
   spawnSync('npm', ['i', '-D', '@types/node']);
-  spawnSync('npm', ['i', 'micro']); // used for body parsing
+  spawnSync('npm', ['i', 'micro']); // used for body parsing in invoque-service
   spawnSync('npm', ['i', '-D', '@types/micro']);
   const tsc = spawnSync('tsc');
   process.stdout.write(tsc.stdout.toString());
+}
 
+const createServiceDistribution = () => {
   // use dockerfile from invoque if one is not already present
   const dockerFilePath = resolve(process.cwd(), './node_modules/invoque/Dockerfile');
   const localDockerfile = resolve(process.cwd(), 'Dockerfile');
@@ -98,7 +100,7 @@ if (service === ServiceTarget.Container) {
     );
   }
 
-  console.log('Copying service into dist...');
+  console.log('Creating service in /dist...');
   const containerScript = resolve(process.cwd(), './node_modules/invoque/dist/invoque-container.js');
   const localContainerScript = resolve(process.cwd(), 'dist/invoque-container.js');
   const localSource = resolve(process.cwd(), `dist/${source}`);
@@ -117,47 +119,15 @@ if (service === ServiceTarget.Container) {
     resolve(process.cwd(), './node_modules/invoque/dist/invoque-util.js'),
     resolve(process.cwd(), 'dist/invoque-util.js')
   );
-
-  console.log('Building docker container...');
-  const imageTag = argv.tag as string || 'my-container';
-  const build = spawn(`docker`, ['build', '.', '-t', imageTag]);
-  build.stdout.on('data', data => process.stdout.write(data.toString()));
-  build.stderr.on('data', data => process.stdout.write(data.toString()));
-  build.on('close', () => console.log('Docker container build complete'));
 }
 
-if (service === ServiceTarget.Deploy) {
-  if (!environmentTarget) {
-    console.error('Please specify a deploy target. Current support: gcf, run');
-    process.exit(1);
-  }
-  // deploy to run
-
-
-  // deploy to gcf
-  console.log(`Deploying ${source}.${functionTarget} to ${environmentTarget}...`);
-  console.log('Compliling TypeScript...');
-  // use tsconfig from invoque if one is not already present
-  const tsconfigPath = resolve(process.cwd(), './node_modules/invoque/tsconfig.invoque.json');
-  const localConfig = resolve(process.cwd(), 'tsconfig.json');
-  if (!fs.existsSync(localConfig)) {
-    console.log('No local tsconfig found, creating one...');
-    fs.copyFileSync(tsconfigPath, localConfig);
-  }
-  spawnSync('rm', ['-rf', 'dist']);
-  // FIXME: This makes linking a pain (undoes it).
-  // Workaround is to check for presense of this dep in package.json?
-  // This also seems to adversely affect CGF deploys, not sure why exactly
-  spawnSync('npm', ['i', '-D', '@types/node']);
-  const tsc = spawnSync('tsc');
-  process.stdout.write(tsc.stdout.toString());
-
+const createFunctionDistribution = () => {
   const trigger = triggerType === TriggerTypes.http
     ? 'http'
     : 'event';
 
   const invoker = `invoque-${environmentTarget}-${trigger}.js`;
-  console.log('Copying invoker into dist...');
+  console.log('Creating function in /dist...');
   const handlerScript = resolve(process.cwd(), `./node_modules/invoque/dist/${invoker}`);
   const localhandlerScript = resolve(process.cwd(), 'dist/index.js');
   const localSource = resolve(process.cwd(), `dist/${source}`);
@@ -169,7 +139,7 @@ if (service === ServiceTarget.Deploy) {
   // write the index
   const writeToFile = fs.readFileSync(handlerScript, 'utf-8')
     .replace('SOURCE_PATH_REPLACE_ON_BUILD', source)
-    .replace('HANDLER_TARGET_REPLACE_ON_DEPLOY', functionTarget);
+    .replace('HANDLER_TARGET_REPLACE_ON_DEPLOY', functionTargetOrServiceName);
   fs.writeFileSync(localhandlerScript, writeToFile, 'utf-8');
 
   // copy package json and util that maps functions from source dir
@@ -181,22 +151,107 @@ if (service === ServiceTarget.Deploy) {
     resolve(process.cwd(), './node_modules/invoque/dist/invoque-util.js'),
     resolve(process.cwd(), 'dist/invoque-util.js')
   );
-
-  console.log('Deploying function...');
-  const args = [
-    'functions',
-    'deploy',
-    functionTarget,
-    '--runtime',
-    'nodejs10',
-    '--entry-point',
-    'googleCloudFnHandler',
-    '--source',
-    './dist/',
-    '--trigger-http'
-  ];
-
-  const build = spawn(`gcloud`, args);
-  build.stdout.on('data', data => process.stdout.write(data.toString()));
-  build.stderr.on('data', data => process.stdout.write(data.toString()));
 }
+
+const submitBuildImage = (projectId: string): Promise<void> => new Promise((resolve, reject) => {
+  console.log('Submitting build to gcloud...');
+  const submit = spawn('gcloud', ['builds', 'submit', '--tag', `gcr.io/${projectId}/${functionTargetOrServiceName}`]);
+  submit.stdout.on('data', (data) => process.stdout.write(data.toString()));
+  submit.stderr.on('data', (data) => process.stdout.write(data.toString()));
+  submit.on('close', (code: number) => {
+    console.log('CloudRun deploy complete');
+    if (code === 0) {
+      return resolve();
+    }
+    reject(code);
+  });
+});
+
+const main = async (): Promise<void> => {
+  if (service === ServiceTarget.Container) {
+    console.log(`Building local service container from ${source}...`);
+    compileTypescript();
+    createServiceDistribution();
+
+    console.log('Building docker container...');
+    const imageTag = argv.tag as string || 'my-container';
+    const build = spawn(`docker`, ['build', '.', '-t', imageTag]);
+    build.stdout.on('data', data => process.stdout.write(data.toString()));
+    build.stderr.on('data', data => process.stdout.write(data.toString()));
+    build.on('close', () => console.log('Docker container build complete'));
+  }
+
+
+  if (service === ServiceTarget.Deploy) {
+    if (!environmentTarget) {
+      console.error('Please specify a deploy target. Current support: gcf, run');
+      process.exit(1);
+    }
+
+    console.log(`Deploying ${source} ${functionTargetOrServiceName} to ${environmentTarget}...`);
+    compileTypescript();
+    const projectInfo = spawnSync('gcloud', ['config', 'get-value', 'project']);
+    const projectId = projectInfo.stdout.toString().replace(/\n/, '');
+    if (projectId <= '') {
+      console.error('No gcp project id specified! Deploy will fail. Set the project id to use invoque deploy.');
+      process.exit(1);
+    }
+
+    // deploy container to run
+    if (environmentTarget === EnvironmentTargets.run) {
+      createServiceDistribution();
+      await submitBuildImage(projectId);
+      console.log('Deploying image to cloud run....');
+      const args: string[] = [
+        'beta',
+        'run',
+        'deploy',
+        functionTargetOrServiceName,
+        '--image',
+        `gcr.io/${projectId}/${functionTargetOrServiceName}`,
+        '--platform',
+        'managed',
+        '--region',
+        argv.region as string || 'us-central1',
+        '--allow-unauthenticated'
+      ];
+      const deploy = spawn(`gcloud`, args);
+      deploy.stdout.on('data', (data) => process.stdout.write(data.toString()));
+      deploy.stderr.on('data', (data) => process.stdout.write(data.toString()));
+      deploy.on('close', () => {
+        console.log('CloudRun deploy complete');
+        process.exit(0);
+      });
+    }
+
+    if (environmentTarget === EnvironmentTargets.gcf) {
+      // deploy to gcf
+      createFunctionDistribution();
+      console.log('Deploying function...');
+      const args = [
+        'functions',
+        'deploy',
+        functionTargetOrServiceName,
+        '--runtime',
+        'nodejs10',
+        '--entry-point',
+        'googleCloudFnHandler',
+        '--source',
+        './dist/',
+        // TODO: specify trigger type for event handlers
+        '--trigger-http'
+      ];
+
+      const deploy = spawn(`gcloud`, args);
+      deploy.stdout.on('data', data => process.stdout.write(data.toString()));
+      deploy.stderr.on('data', data => process.stdout.write(data.toString()));
+      deploy.on('close', () => {
+        console.log('Function deploy complete');
+        process.exit(0);
+      });
+    }
+  }
+}
+
+main()
+  .catch(e => console.error('invoque: caught runtime error', e));

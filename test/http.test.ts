@@ -53,4 +53,20 @@ describe('express service', () => {
       .expect(401);
     expect(body.message).toContain('Unauthorized');
   });
+
+  test('it should allow other http calls', async () => {
+    await request(app)
+      .post('/hello')
+      .set('content-type', 'application/json')
+      .send({ foo: 'bar'})
+      .expect(200);
+  });
+
+  test('should use args from uri', async () => {
+    const id = '123';
+    const { body } = await request(app)
+      .get('/withArgs/123')
+      .expect(200);
+    expect(body).toBe(id);
+  });
 });
