@@ -134,7 +134,7 @@ if (service === ServiceTarget.Deploy) {
     fs.copyFileSync(tsconfigPath, localConfig);
   }
   spawnSync('rm', ['-rf', 'dist']);
-  // spawnSync('npm', ['i', '@types/node']);
+  spawnSync('npm', ['i', '-D', '@types/node']);
   const tsc = spawnSync('tsc');
   process.stdout.write(tsc.stdout.toString());
 
