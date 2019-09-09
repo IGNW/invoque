@@ -2,7 +2,7 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
-  // silent: true,
+  silent: true,
   preset: 'ts-jest',
   testEnvironment: 'node',
   testRegex: '(/tests/.*|(\\.|/)(test))\\.(ts)$',
