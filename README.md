@@ -134,7 +134,6 @@ Currently the Google Functions name reference and the single handler contained s
 #### Deploy to CloudRun
 ```
 invoque deploy ./ hello run
-
 ```
 
 The third argument for this deployment is the service name. Because clould build will use this as the container image name, only lower case characters are allowed. As with the above, this could likely be improved.
