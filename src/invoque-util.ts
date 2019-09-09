@@ -10,7 +10,7 @@ export const functionsFromPath = (sourcePath: string): Functions =>
     : fs.readdirSync(sourcePath)
       // if project is flat, remove invoque files / deps from the service
       .filter(
-        (file: string) => file.indexOf('invoque-') === -1 || file.indexOf('node_modules'),
+        (file: string) => file.indexOf('invoque-') === -1 && file.indexOf('node_modules') === -1,
       )
       .reduce((acc, file) => {
         console.log('file?', file);
