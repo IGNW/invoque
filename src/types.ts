@@ -15,6 +15,7 @@ export interface Payload {
 export interface Invoquation {
   type: string;
   payload: Payload;
+  uriArgs: string[];
 }
 
 export interface Response {

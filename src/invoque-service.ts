@@ -10,6 +10,7 @@ import {
 } from 'url';
 import {
   Functions,
+  Invoquation,
   Payload,
   Request,
   Response,
@@ -46,9 +47,9 @@ export const serviceFromFunctions = (
     const invocationType = simulateEvent
       ? 'invoque.simulated.event'
       : `HTTP_${req.method!.toUpperCase()}`;
-    const handler = (parse(req.url!).pathname || '').replace(/\//g, '');
+    const [_, handler, ...uriArgs] = (parse(req.url!).pathname || '').split('/');
 
-    // 404 if we dont have a method
+    // 404 if no handler method defined
     if (!functions[handler]) {
       res.writeHead(404);
       res.end();
@@ -64,13 +65,15 @@ export const serviceFromFunctions = (
 
       // log request
       // tslint:disable-next-line
-      console.log(invocationType, handler, payload);
+      console.log(invocationType, handler, uriArgs, payload);
 
       // invoke the target function with payload
-      const result: Response = functions[handler]({
+      const invoquation: Invoquation = {
         payload,
         type: invocationType,
-      });
+        uriArgs,
+      };
+      const result: Response = functions[handler](invoquation);
 
       const defaultHeaders = {
         'content-type': 'application/json',
