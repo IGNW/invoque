@@ -2,35 +2,34 @@
 
 A pattern for function oriented service composition / decomposition. **This is beta / poc software**
 
-### "All I want to do is write functions..."
+## "All I want to do is write functions"
 
-Invoque is a tool that gives you the ability to maintain your application code as a monolith and supplies tooling that lets you deploy either containerized services or invididual serverless functions. You can easily switch between deployment strategies **without rewriting any code.**
+Invoque is a tool that gives you the ability to maintain application code as a monolith and supplies tooling that lets you easily deploy groups of functions (endpoints) as containerized services or invididual serverless functions. By adpoting the invoque handler pattern you can easily switch between deployment strategies **without rewriting code.**
 
 #### You will never have to hand-code an http/express service in Node again! 🎉
 
-### Conventions
-
-Invoque opts for conventions over configuration:
+### Conventions over Configuration
 
 1. TypeScript, because, TypeScript.
-2. Application code (i.e. functions) live in a `/src` folder.
+2. Application code (i.e. functions) lives in a `/src` folder and gets compiled to `/dist`.
 3. Functions take an `Invoquation` object as their only argument which has a `type` and `payload`.
-4. Functions simply throw and the service will respond accordingly.
+4. Functions can throw, be async or sync and service will respond accordingly. To send back another status code, attach `code` or `statusCode` to an extensible error object.
 5. Functions return a `Response` which can be a plain object, or have `data`, `status`, and `headers` props for more control over HTTP responses.
 6. Service routes map `http://my-service.com/my-function` to the name of your function' `export const my-function = {...}`*
+7. Additional route "arguments" are passed a `uriArgs: string[]` prop of `Invoquation` e.g. `/users/123` will invoke with `{ uriArgs: ['123'] }`*
 
-*No URL pattern matching is supported (at this time). Instead, payloads for GET requests are created with good old fashioned query string params.
+*Any query string params will also be parsed and passed along with the payload.
 
-## Using Invoque
+## Quick Start
 
-### HTTP Dev Server
-
-To start using invoque add it as a devDependency:
+To start using invoque add it as a dependency to your node project:
 ```sh
-npm i -D invoque
+npm i invoque
 ```
 
-Create a `src/` folder in your project and add a `hello.ts` file. Add the following handler:
+Create a `src/` folder and create a `hello.ts` file.
+
+Add the following handler:
 
 ```ts
 import { Invoquation } from 'invoque';
@@ -44,7 +43,7 @@ export const healthcheck = () => ({
 })
 ```
 
-Run your new service with Invoque:
+Run the service with invoque command:
 ```sh
 invoque http ./
 ```
@@ -83,10 +82,15 @@ docker run -p 3001:8080 -e 'PORT=8080' t my-container
 You should be able to make requests to the container at `http://localhost:3001/`
 
 
+## Usage/API
 
-## More Usage Examples
+The **first argument** to `invoque` is a command. Currently supported commands are
+* `http` Runs http dev server,
+* `event` Runs dev server simuating event context (poorly)
+* `build` build a local docker container
+* `deploy` deploy to GCF/CloudRun.
 
-Currently, invoque supports `http` and `build` commands. **The second argument is the directory or single ts module**. This allows you to organize code into groups of endpoints by either, exporting multipe functions from a single file, grouping functions into folders or both.
+**The second argument is the directory or single ts module**. This allows you to organize code into groups of endpoints by either, exporting multipe functions from a single file, grouping functions into folders, or both.
 
 For example, this project structure
 ```
@@ -103,10 +107,37 @@ invoque build users/ --tag user-service
 invoque build accounts/ --tag account-service
 ```
 
-To run a local server for dev
+Similarly, to run a local server for dev
 ```
 invoque http users/ --port 3030
 ```
+
+### Deployment
+
+`invoque deploy [sourceDirectoryOrModule] [functionOrServiceName] [gcf|run]`
+
+Currently deployment to Google Cloud Functions and Google Cloud Run is supported out of the box, though Docker deployment gives great flexibility beyond Cloud Run.
+
+For deployment to work, the [gcloud sdk](https://cloud.google.com/sdk/docs/quickstarts) must be installed on the machine running `invoque deploy`.
+
+Additionally, a GCP `project` must be set via [gcloud config set](https://cloud.google.com/sdk/gcloud/reference/config/set) or the deploy commands will exit 1.
+
+#### Deploy to GCF
+
+```
+invoque deploy ./ hello gcf
+```
+
+Currently the Google Functions name reference and the single handler contained somewhere in the source directory are the same. In this example, hello is a function exported in any file contained in the `./src` directory.
+
+
+#### Deploy to CloudRun
+```
+invoque deploy ./ hello run
+
+```
+
+The third argument for this deployment is the service name. Because clould build will use this as the container image name, only lower case characters are allowed. As with the above, this could likely be improved.
 
 ## Testing
 
@@ -114,7 +145,7 @@ Though you can use any test tools you wish, Invoque exposes two functions that a
 
 Here's an example that tests our `/healthcheck` route from the example above:
 
-```ts
+```js
 import { resolve } from 'path';
 import * as request from 'supertest';
 import {
@@ -146,7 +177,7 @@ You will also need to install some dev dependencies:
 
 Add a jest.config.js:
 
-```js
+```
 module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
@@ -166,17 +197,15 @@ Then add a test script to package.json: `"test": "jest"`
 
 
 #### Tips:
-* Although you likely could, we suggest storing common service dependencies in a separate repo and publishing them to npm.
+* Although you likely could co-locate shared dependencies between deployment units, we suggest storing common service dependencies in a separate repo and publishing them to npm.
 * You can use the created `Dockerfile` along with `docker-compose` to bring up dependent servcies, local aws, pubsub, database etc.
+* More examples and articles to come soon as we build out beyond POC!
 
 ## Roadmap
- * Google Cloud Functions Deploy Tools
- * Google Run Deploy Tools
- * Google Cloud Function event trigger handler tooling (dev server)
- * AWS Lambda/Azure/Hybrid Deploy (Terrraform?)
- * CI/CD Tooling
- * Advanced Routing(?)
+ * Google Cloud Function Trigger Option
+ * Support for AWS Lambda/Azure Functions/Now.sh
+ * CI/CD Tooling Via Git Diff/Other mechanism
 
 ## Credit
 
-The idea for invoque was partically inspired by the [Google Functions Framework](https://github.com/GoogleCloudPlatform/functions-framework-nodejs)
+The idea for invoque was in partly inspired by the [Google Functions Framework](https://github.com/GoogleCloudPlatform/functions-framework-nodejs)

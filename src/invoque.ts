@@ -69,7 +69,7 @@ if (service === ServiceTarget.HttpDevServer || service === ServiceTarget.EventDe
 }
 
 const compileTypescript = () => {
-  console.log('Compliling TypeScript...');
+  console.log('Compiling project...');
   // use tsconfig from invoque if one is not already present
   const tsconfigPath = resolve(process.cwd(), './node_modules/invoque/tsconfig.invoque.json');
   const localConfig = resolve(process.cwd(), 'tsconfig.json');
