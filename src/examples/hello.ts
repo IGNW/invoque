@@ -16,3 +16,8 @@ export const goodbye = ({ type, payload }: Invoquation) => {
 };
 
 export const withArgs = ({ type, payload, uriArgs: [id] }: Invoquation) => id;
+
+export const useAsync = async () => {
+  await Promise.resolve();
+  return 'it works';
+};

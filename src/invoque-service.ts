@@ -74,7 +74,7 @@ export const serviceFromFunctions = (
         type: invocationType,
         uriArgs,
       };
-      const result: Response = functions[handler](invoquation);
+      const result: Response = await functions[handler](invoquation);
 
       const defaultHeaders = {
         'content-type': 'application/json',

@@ -9,7 +9,7 @@ const HANDLER_TARGET = 'HANDLER_TARGET_REPLACE_ON_DEPLOY';
 
 const moduleWithFn = functionsFromPath(SOURCE_MODULE); // tslint:disable-line
 
-export const googleCloudFnHandler = (req: Request, res: Response) => {
+export const googleCloudFnHandler = async (req: Request, res: Response) => {
   try {
     const [_, __, ...uriArgs] = (parse(req.url!).pathname || '').split('/');
     // allow function to throw vs care about crafting response
@@ -30,7 +30,7 @@ export const googleCloudFnHandler = (req: Request, res: Response) => {
       ? parsedBody
       : parse(req.url, true).query;
 
-    const result = moduleWithFn[HANDLER_TARGET]({
+    const result = await moduleWithFn[HANDLER_TARGET]({
       payload,
       type: `HTTP_${req.method!.toUpperCase()}`,
       uriArgs,

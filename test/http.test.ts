@@ -69,4 +69,11 @@ describe('express service', () => {
       .expect(200);
     expect(body).toBe(id);
   });
+
+  test('should work with async functions', async () => {
+    const { body } = await request(app)
+      .get('/useAsync')
+      .expect(200);
+    expect(body).toContain('it works');
+  });
 });
