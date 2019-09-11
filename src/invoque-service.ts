@@ -47,7 +47,7 @@ export const serviceFromFunctions = (
     const invocationType = simulateEvent
       ? 'invoque.simulated.event'
       : `HTTP_${req.method!.toUpperCase()}`;
-    const [_, handler, ...uriArgs] = (parse(req.url!).pathname || '').split('/');
+    const [_, handler, ...args] = (parse(req.url!).pathname || '').split('/');
 
     // 404 if no handler method defined
     if (!functions[handler]) {
@@ -66,13 +66,13 @@ export const serviceFromFunctions = (
       // log request
       // TOOD: use debug module, be more verbose
       // tslint:disable-next-line
-      console.log(new Date().toISOString(), invocationType, handler, uriArgs, JSON.stringify(payload, null, 2));
+      console.log(new Date().toISOString(), invocationType, handler, args, JSON.stringify(payload, null, 2));
 
       // invoke the target function with payload
       const invoquation: Invoquation = {
+        args,
         payload,
         type: invocationType,
-        uriArgs,
       };
       const result: Response = await functions[handler](invoquation);
 

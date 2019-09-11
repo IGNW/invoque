@@ -11,7 +11,7 @@ const moduleWithFn = functionsFromPath(SOURCE_MODULE); // tslint:disable-line
 
 export const googleCloudFnHandler = async (req: Request, res: Response) => {
   try {
-    const [_, __, ...uriArgs] = (parse(req.url!).pathname || '').split('/');
+    const [_, __, ...args] = (parse(req.url!).pathname || '').split('/');
     // allow function to throw vs care about crafting response
     const body: string = req.get('content-type') === 'application/octet-stream'
       ? req.body.toString()
@@ -27,13 +27,13 @@ export const googleCloudFnHandler = async (req: Request, res: Response) => {
       parsedBody = body;
     }
     const payload: Payload = body && req.method !== 'GET'
-      ? parsedBody
-      : parse(req.url, true).query;
+    ? parsedBody
+    : parse(req.url, true).query;
 
     const result = await moduleWithFn[HANDLER_TARGET]({
+      args,
       payload,
       type: `HTTP_${req.method!.toUpperCase()}`,
-      uriArgs,
     });
     const defaultHeaders = {
       'content-type': 'application/json',

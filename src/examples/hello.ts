@@ -1,6 +1,6 @@
 import { Invoquation } from '../types';
 
-export const hello = ({ type, payload, uriArgs: [id] }: Invoquation) => {
+export const hello = ({ type, payload, args: [id] }: Invoquation) => {
   return `Hello ${type}, here is your ${payload.hello}`;
 };
 
@@ -15,7 +15,7 @@ export const goodbye = ({ type, payload }: Invoquation) => {
   throw new Error('boom');
 };
 
-export const withArgs = ({ type, payload, uriArgs: [id] }: Invoquation) => id;
+export const withArgs = ({ type, payload, args: [id] }: Invoquation) => id;
 
 export const useAsync = async () => {
   await Promise.resolve();
