@@ -3,6 +3,7 @@ import {
   ServerResponse,
 } from 'http';
 import {
+  buffer,
   json,
 } from 'micro';
 import {
@@ -35,8 +36,13 @@ export const payloadFromRequest = async (
   if (req.method === 'GET') {
     return parse(req.url, true).query;
   }
-  // http 'other' request
-  return req.body || json(req);
+  // http 'other' request, try pasing json, otherwise return buffer (raw)
+  try {
+    const parsedJson = await json(req);
+    return parsedJson;
+  } catch {
+    return { buffer: await buffer(req) };
+  }
 };
 
 export const serviceFromFunctions = (
@@ -66,7 +72,7 @@ export const serviceFromFunctions = (
       // log request
       // TOOD: use debug module, be more verbose
       // tslint:disable-next-line
-      console.log(new Date().toISOString(), invocationType, handler, args, JSON.stringify(payload, null, 2));
+      console.log(new Date().toISOString(), invocationType, handler, args);
 
       // invoke the target function with payload
       const invoquation: Invoquation = {
@@ -74,9 +80,19 @@ export const serviceFromFunctions = (
         payload,
         type: invocationType,
       };
-      const result: Response = await functions[handler](invoquation);
+      const result: Response = invocationType === 'HTTP_OPTIONS'
+        ? {
+          data: null,
+          headers: {},
+          message: 'OK',
+          status: 200,
+        }
+        : await functions[handler](invoquation);
 
       const defaultHeaders = {
+        'Access-Control-Allow-Headers': 'Content-Type, Access-Control-Allow-Headers, X-Requested-With',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
+        'Access-Control-Allow-Origin': '*',
         'content-type': 'application/json',
       };
       res.writeHead(

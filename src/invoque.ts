@@ -213,8 +213,9 @@ const main = async (): Promise<void> => {
         'managed',
         '--region',
         argv.region as string || 'us-central1',
-        '--allow-unauthenticated'
+        '--allow-unauthenticated',
       ];
+      console.log(args.join(' '));
       const deploy = spawn(`gcloud`, args);
       deploy.stdout.on('data', (data) => process.stdout.write(data.toString()));
       deploy.stderr.on('data', (data) => process.stdout.write(data.toString()));

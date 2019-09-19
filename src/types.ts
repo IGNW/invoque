@@ -9,6 +9,7 @@ export interface Payload {
   // https://cloud.google.com/functions/docs/writing/background (GCF)
   // TODO: It could be a more strongly typed interface representing those props
   context?: any;
+  buffer?: Buffer | string;
   [key: string]: any;
 }
 

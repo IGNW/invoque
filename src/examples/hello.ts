@@ -21,3 +21,7 @@ export const useAsync = async () => {
   await Promise.resolve();
   return 'it works';
 };
+
+export const upload = ({ payload }: Invoquation) => {
+  console.log(payload);
+};

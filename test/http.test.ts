@@ -13,6 +13,7 @@ describe('express service', () => {
   let singleModuleApp: any;
   const exampleHandlers = resolve(process.cwd(), 'src/examples');
   const exampleHandlerFile = resolve(process.cwd(), 'src/examples/hello.ts');
+
   beforeAll(() => {
     app = serviceFromFunctions(
       functionsFromPath(exampleHandlers),
@@ -75,5 +76,14 @@ describe('express service', () => {
       .get('/useAsync')
       .expect(200);
     expect(body).toContain('it works');
+  });
+
+  test('should handle file uploads', async () => {
+    const testImage = resolve(process.cwd(), 'test/test-image.png');
+    await request(app)
+      .post('/upload')
+      .attach('file', testImage)
+      .expect(200);
+
   });
 });
