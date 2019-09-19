@@ -41,7 +41,7 @@ export const payloadFromRequest = async (
     const parsedJson = await json(req);
     return parsedJson;
   } catch {
-    return { buffer: await buffer(req) };
+    return { buffer: await buffer(req, { limit: '20mb' }) };
   }
 };
 
