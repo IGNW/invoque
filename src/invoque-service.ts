@@ -17,6 +17,8 @@ import {
   Response,
 } from './types';
 
+const PAYLOAD_LIMIT_MAX_SIZE = '20mb';
+
 export const payloadFromRequest = async (
   req: Request,
   simulateEvent: boolean,
@@ -38,10 +40,10 @@ export const payloadFromRequest = async (
   }
   // http 'other' request, try pasing json, otherwise return buffer (raw)
   try {
-    const parsedJson = await json(req);
+    const parsedJson = await json(req, { limit: PAYLOAD_LIMIT_MAX_SIZE });
     return parsedJson;
   } catch {
-    return { buffer: await buffer(req, { limit: '20mb' }) };
+    return { buffer: await buffer(req, { limit: PAYLOAD_LIMIT_MAX_SIZE }) };
   }
 };
 

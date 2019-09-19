@@ -1,6 +1,6 @@
 {
   "name": "invoque",
-  "version": "1.0.27",
+  "version": "1.0.28",
   "description": "A flexible pattern for function oriented service composition / decomposition",
   "bin": {
     "invoque": "dist/invoque.js"
