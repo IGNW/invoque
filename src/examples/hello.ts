@@ -23,5 +23,5 @@ export const useAsync = async () => {
 };
 
 export const upload = ({ payload }: Invoquation) => {
-  console.log(payload);
+  return payload;
 };
