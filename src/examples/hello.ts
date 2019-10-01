@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import { resolve } from 'path';
 import { Invoquation } from '../types';
 
 export const hello = ({ type, payload, args: [id] }: Invoquation) => {
@@ -23,5 +25,20 @@ export const useAsync = async () => {
 };
 
 export const upload = ({ payload }: Invoquation) => {
-  return payload;
+  return {
+    buffer: payload.buffer,
+    headers: {
+      'content-type': 'image/jpeg',
+    },
+    status: 200,
+  };
+};
+
+export const bytes = () => {
+  return {
+    buffer: fs.readFileSync(resolve(process.cwd(), 'test/test-image.png')),
+    headers: {
+      'content-type': 'image/jpeg',
+    },
+  };
 };

@@ -205,9 +205,12 @@ Then add a test script to package.json: `"test": "jest"`
 * More examples and articles to come soon as we build out beyond POC!
 
 ## Roadmap
- * Google Cloud Function Trigger Option
- * Support for AWS Lambda/Azure Functions/Now.sh
- * CI/CD Tooling Via Git Diff/Other mechanism
+ * Deprecate functions in favor of containerized services only.
+ * Support Streaming Responses
+ * Support HTTP2
+ * Support gRPC
+ * Deploy tools for AWS Fargate, Now.sh
+ * CI/CD tools via `git diff`
 
 ## Credit
 

@@ -52,12 +52,16 @@ export const serviceFromFunctions = (
   simulateEvent: boolean = false,
 ) =>
   async (req: Request, res: ServerResponse) => {
+    // DEP-WARNING: May deprecaate functions in favor of containerized
+    // simulate event for serverless functions.
     const invocationType = simulateEvent
       ? 'invoque.simulated.event'
       : `HTTP_${req.method!.toUpperCase()}`;
+
+    // get handler and args from path
     const [_, handler, ...args] = (parse(req.url!).pathname || '').split('/');
 
-    // 404 if no handler method defined
+    // 404 if no handler method defined on target path
     if (!functions[handler]) {
       res.writeHead(404);
       res.end();
@@ -72,7 +76,10 @@ export const serviceFromFunctions = (
       );
 
       // log request
-      // TOOD: use debug module, be more verbose
+      // TODO:
+      //  use debug module?
+      //  be more verbose depending on request type / size?
+      //  provide a hook for debugging in the invocation? (console.log works fine...?)
       // tslint:disable-next-line
       console.log(new Date().toISOString(), invocationType, handler, args);
 
@@ -101,7 +108,12 @@ export const serviceFromFunctions = (
         result.status || 200,
         { ...defaultHeaders, ...result.headers },
       );
-      res.write(JSON.stringify(result.data || result));
+      // TODO: support streaming responses
+      res.write(
+        result.buffer ||
+        JSON.stringify(result.data || result),
+      );
+      // TODO: log response/result
       res.end();
       return;
 

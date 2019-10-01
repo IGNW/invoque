@@ -1,4 +1,3 @@
-import { RequestListener } from 'http';
 import { resolve } from 'path';
 import * as request from 'supertest';
 import {
@@ -39,6 +38,7 @@ describe('express service', () => {
     const { text } = await request(app)
       .get('/hello')
       .expect(200);
+
     expect(text).toContain('Hello');
   });
 
@@ -52,6 +52,7 @@ describe('express service', () => {
     const { body } = await request(app)
       .get('/fancy')
       .expect(401);
+
     expect(body.message).toContain('Unauthorized');
   });
 
@@ -68,6 +69,7 @@ describe('express service', () => {
     const { body } = await request(app)
       .get('/withArgs/123')
       .expect(200);
+
     expect(body).toBe(id);
   });
 
@@ -75,6 +77,7 @@ describe('express service', () => {
     const { body } = await request(app)
       .get('/useAsync')
       .expect(200);
+
     expect(body).toContain('it works');
   });
 
@@ -84,6 +87,14 @@ describe('express service', () => {
       .post('/upload')
       .attach('file', testImage)
       .expect(200);
+  });
 
+  test('get bytes back when sent back as response.buffer', async () => {
+    const { header } = await request(app)
+      .get('/bytes')
+      .expect(200);
+
+    expect(header['content-type'])
+      .toBe('image/jpeg');
   });
 });

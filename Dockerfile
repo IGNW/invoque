@@ -8,6 +8,7 @@ RUN npm install
 RUN npm install @types/node
 RUN npm install @types/micro
 RUN tsc
+RUN npm prune --production
 
 # Production Image ~25MB
 FROM alpine

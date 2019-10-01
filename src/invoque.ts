@@ -201,7 +201,7 @@ const main = async (): Promise<void> => {
     if (environmentTarget === EnvironmentTargets.run) {
       createServiceDistribution();
       await submitBuildImage(projectId);
-      console.log('Deploying image to cloud run....');
+      console.log('Deploying image to cloud run:');
       const args: string[] = [
         'beta',
         'run',
@@ -213,14 +213,24 @@ const main = async (): Promise<void> => {
         'managed',
         '--region',
         argv.region as string || 'us-central1',
+        '--memory',
+        argv.memory as string || '256MiB',
         '--allow-unauthenticated',
       ];
-      console.log(args.join(' '));
+      if (argv['service-account']) {
+        args.concat([
+          '--service-account',
+          argv['service-account'] as string
+        ]);
+      }
+
+      console.info(`gcloud ${args.join(' ')}`);
       const deploy = spawn(`gcloud`, args);
       deploy.stdout.on('data', (data) => process.stdout.write(data.toString()));
       deploy.stderr.on('data', (data) => process.stdout.write(data.toString()));
       deploy.on('close', () => {
-        console.log('CloudRun deploy complete');
+        console.log('invoque: CloudRun deploy complete.');
+        console.log('For more advanced deploy options run the above command directly. Reference here https://cloud.google.com/sdk/gcloud/reference/beta/run/deploy');
         process.exit(0);
       });
     }
