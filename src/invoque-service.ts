@@ -38,7 +38,7 @@ export const payloadFromRequest = async (
   if (req.method === 'GET') {
     return parse(req.url, true).query;
   }
-  // http 'other' request, try pasing json, otherwise return buffer (raw)
+  // http 'other' request, try parsing json, otherwise return buffer (raw)
   try {
     const parsedJson = await json(req, { limit: PAYLOAD_LIMIT_MAX_SIZE });
     return parsedJson;
