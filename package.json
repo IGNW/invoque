@@ -1,6 +1,6 @@
 {
   "name": "invoque",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "description": "A flexible pattern for function oriented service composition / decomposition",
   "bin": {
     "invoque": "dist/invoque.js"
@@ -38,6 +38,7 @@
   "dependencies": {
     "debug": "^4.1.1",
     "micro": "^9.3.4",
+    "readline-sync": "^1.4.10",
     "yargs": "^14.0.0"
   },
   "devDependencies": {
@@ -45,6 +46,7 @@
     "@types/jest": "^24.0.18",
     "@types/micro": "^7.3.3",
     "@types/node": "^12.7.5",
+    "@types/readline-sync": "^1.4.3",
     "@types/supertest": "^2.0.8",
     "@types/yargs": "^13.0.2",
     "express": "^4.17.1",

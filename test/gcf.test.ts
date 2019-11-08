@@ -1,4 +1,3 @@
-import { RequestListener } from 'http';
 import { resolve } from 'path';
 import * as request from 'supertest';
 import {

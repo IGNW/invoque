@@ -11,7 +11,7 @@ const moduleWithFn = functionsFromPath(SOURCE_MODULE); // tslint:disable-line
 
 export const googleCloudFnHandler = async (req: Request, res: Response) => {
   try {
-    const [_, __, ...args] = (parse(req.url!).pathname || '').split('/');
+    const [_, ...args] = (parse(req.url!).pathname || '').split('/');
     // allow function to throw vs care about crafting response
     const body: string = req.get('content-type') === 'application/octet-stream'
       ? req.body.toString()
