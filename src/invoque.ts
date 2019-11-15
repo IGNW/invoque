@@ -159,7 +159,7 @@ const submitBuildImage = (projectId: string): Promise<void> => new Promise((reso
   submit.stdout.on('data', (data) => process.stdout.write(data.toString()));
   submit.stderr.on('data', (data) => process.stdout.write(data.toString()));
   submit.on('close', (code: number) => {
-    console.log('CloudRun deploy complete');
+    console.log('Submit build image complete.');
     if (code === 0) {
       return resolve();
     }
@@ -203,7 +203,6 @@ const main = async (): Promise<void> => {
       await submitBuildImage(projectId);
       console.log('Deploying image to cloud run:');
       const args: string[] = [
-        'beta',
         'run',
         'deploy',
         functionTargetOrServiceName,
@@ -213,8 +212,6 @@ const main = async (): Promise<void> => {
         'managed',
         '--region',
         argv.region as string || 'us-central1',
-        '--memory',
-        argv.memory as string || '256MiB',
         '--allow-unauthenticated',
       ];
       if (argv['service-account']) {
