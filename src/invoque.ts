@@ -93,11 +93,15 @@ const createServiceDistribution = () => {
   if (!fs.existsSync(localDockerfile)) {
     console.log('No local Dockerfile found, creating one...');
     fs.copyFileSync(dockerFilePath, localDockerfile);
-    // copy .docker ignore for cloud run
-    fs.copyFileSync(
-      resolve(process.cwd(), './node_modules/invoque/Dockerfile'),
-      resolve(process.cwd(), 'Dockerfile')
-    );
+  }
+
+  // update gcloud ignore so dist is sent
+  // use dockerfile from invoque if one is not already present
+  const gcloudIgnorePath = resolve(process.cwd(), './node_modules/invoque/.gcloudignore');
+  const localGcloudIgnore = resolve(process.cwd(), '.gcloudignore');
+  if (!fs.existsSync(localGcloudIgnore)) {
+    console.log('Creating .gcloud ignore...');
+    fs.copyFileSync(gcloudIgnorePath, localGcloudIgnore);
   }
 
   console.log('Creating service in /dist...');
