@@ -32,6 +32,7 @@ export const googleCloudFnHandler = async (req: Request, res: Response) => {
 
     const result = await moduleWithFn[HANDLER_TARGET]({
       args,
+      headers: req.headers,
       payload,
       type: `HTTP_${req.method!.toUpperCase()}`,
     });
