@@ -86,6 +86,7 @@ export const serviceFromFunctions = (
       // invoke the target function with payload
       const invoquation: Invoquation = {
         args,
+        headers: req.headers,
         payload,
         type: invocationType,
       };

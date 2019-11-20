@@ -81,6 +81,15 @@ describe('express service', () => {
     expect(body).toContain('it works');
   });
 
+  test('should pass headers from request', async () => {
+    const { body } = await request(app)
+      .post('/withHeader')
+      .set('Authorization', 'foo.bar')
+      .expect(200);
+
+    expect(body).toBe('foo.bar');
+  });
+
   test('should handle file uploads', async () => {
     const testImage = resolve(process.cwd(), 'test/test-image.png');
     await request(app)

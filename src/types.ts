@@ -1,4 +1,5 @@
 import {
+  IncomingHttpHeaders,
   IncomingMessage,
   OutgoingHttpHeaders,
 } from 'http';
@@ -17,6 +18,7 @@ export interface Invoquation {
   type: string;
   payload: Payload;
   args: string[];
+  headers: IncomingHttpHeaders;
 }
 
 export interface Response {

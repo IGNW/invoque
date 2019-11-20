@@ -24,6 +24,9 @@ export const useAsync = async () => {
   return 'it works';
 };
 
+export const withHeader = ({ headers }: Invoquation) =>
+  headers.authorization;
+
 export const upload = ({ payload }: Invoquation) => {
   return {
     buffer: payload.buffer,
