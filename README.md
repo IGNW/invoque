@@ -2,6 +2,15 @@
 
 A pattern for function oriented service composition / decomposition. **This is beta / poc software**
 
+## UPDATE May 2020
+
+While the built in GCP functions+run deployment and container builder are cool, there has been some movement toward [standardizing cloud events](https://cloudevents.io/)which this project didn't take into account. 
+
+Given I expect that trend to continue, tooling 
+such as the [Go Functions framework](https://github.com/GoogleCloudPlatform/functions-framework-go) will continue to get better (my current choice for serverless on GCP), and unfortunately this POC will not. 
+
+This was still a fun project conceptually! Enjoy.
+
 ## "All I want to do is write functions"
 
 Invoque is a tool that gives you the ability to maintain application code as a monolith and supplies tooling that lets you easily deploy groups of functions (endpoints) as containerized services or invididual serverless functions. By adpoting the invoque handler pattern you can easily switch between deployment strategies **without rewriting code.**
